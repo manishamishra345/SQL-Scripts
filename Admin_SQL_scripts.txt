@@ -1,0 +1,56 @@
+--Check Constraints status--
+
+SELECT CONSTRAINT_TYPE, COUNT(STATUS)COUNTS,
+SUM(DECODE(STATUS,'ENABLED',1,0))ENABLED,
+SUM(DECODE(STATUS,'DISABLED',1,0))DISABLED
+FROM DBA_CONSTRAINTS 
+WHERE  CONSTRAINT_TYPE IN ('P','C', 'U', 'R')
+AND OWNER ='FLEXADMIN'
+And constraint_name not like 'BIN$%'
+GROUP BY CONSTRAINT_TYPE ORDER BY 1;
+
+--All DB Objects by schema owner---
+select owner, 
+object_type, 
+count(*) 
+from dba_objects 
+WHERE OWNER LIKE 'FLEXxxx'
+group by owner, object_type 
+order by owner; 
+ 
+--ALL Tables--
+
+SELECT owner,
+table_name
+FROM dba_tables
+where owner like 'FLEXxxx';
+
+---Total Database Size--
+select round(sum(bytes)/1024/1024/1024,2) "Total Database size in GB" 
+from user_segments;
+
+--Total Attachment Size--
+select count(*) as "Attachments", 
+round(SUM(DOC_FILE_SIZE)/1024/1024/1024,2) "Total Attachment Size in GB" 
+from document;
+
+--Total pdf Attachment Size--
+select count(*) as "Attachments", 
+round(SUM(DOC_FILE_SIZE)/1024/1024/1024,2) "Total Attachment Size in GB" 
+from document
+where doc_file_name like '%.pdf%' ;
+
+--Total jpg Attachment Size--
+select count(*) as "Attachments", 
+round(SUM(DOC_FILE_SIZE)/1024/1024/1024,2) "Total Attachment Size in GB" 
+from document
+where doc_file_name like '%.jpg%';
+
+
+--current nightly export dump file is saved in directory=EXP_DUMP--
+SELECT directory_name, directory_path FROM dba_directories WHERE directory_name='EXP_DUMP';
+
+--CREATE  DIRECTORY dump2 AS 'D:\Export\Exp02\';
+
+---Check the DPDUMP directory location with the following query--
+SELECT directory_name, directory_path FROM dba_directories;
